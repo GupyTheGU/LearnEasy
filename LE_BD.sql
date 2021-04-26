@@ -1,0 +1,50 @@
+CREATE DATABASE learneasy;
+USE learneasy;
+
+CREATE TABLE CUENTA(
+	idCuenta		INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	nombre		VARCHAR(30) NOT NULL,
+	pApellido	VARCHAR(30) NOT NULL,
+	sApellido	VARCHAR(30),
+	correo		VARCHAR(30) NOT NULL,
+	idTipo		CHAR(1) NOT NULL,
+	idAgenda		INT UNSIGNED DEFAULT NULL,
+	idHorario		INT UNSIGNED DEFAULT NULL,
+	PRIMARY KEY(idCuenta)
+);
+
+CREATE TABLE TUTOR(
+	idCuenta		INT UNSIGNED NOT NULL,		
+	descripcion	VARCHAR(400),
+	idHorarioDisponibilidad INT UNSIGNED,
+	valoracionTotal	DECIMAL(2,2),
+	PRIMARY KEY(idCuenta)
+);
+
+CREATE TABLE HORARIO(
+	idHorario	INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	tipoHorario	CHAR(1) NOT NULL,
+	PRIMARY KEY(idHorario)
+);
+
+CREATE TABLE REL_HORARIO_PERIODO(
+	idHorario INT UNSIGNED NOT NULL,
+	idPeriodo INT UNSIGNED NOT NULL,
+	PRIMARY KEY(idHorario, idPeriodo)
+);
+
+CREATE TABLE PERIODO(
+	idPeriodo INT UNSIGNED NOT NULL,
+	fecha		 DATE NOT NULL,
+	horaIn	 TIME NOT NULL,
+	horaOut   TIME NOT NULL,
+	PRIMARY KEY(idPeriodo)
+);
+
+CREATE TABLE EVENTO(
+	idAprendiz
+	idTutor
+	tipoTutoria
+	descripcion
+	
+);
