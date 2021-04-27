@@ -21,7 +21,7 @@ CREATE TABLE TUTOR(
 	idCuenta		INT UNSIGNED NOT NULL,		
 	descripcion	VARCHAR(400),
 	idHorarioDisponibilidad INT UNSIGNED DEFAULT NULL,
-	valoracionTotal	DECIMAL(2,1) DEFAULT NULL,
+	valoracionTotal	DECIMAL(2,1) DEFAULT 0.0,
 	PRIMARY KEY(idCuenta)
 );
 
@@ -287,5 +287,15 @@ BEGIN
 				SELECT existe;
 			END if;
 		END if;
+END$$
+delimiter ;
+#drop procedure if exists sp_buscarArea;
+delimiter $$
+CREATE PROCEDURE sp_buscarArea(IN asignatura VARCHAR(40))
+BEGIN
+		SELECT cuenta.idCuenta,cuenta.nombre, cuenta.pApellido, cuenta.sApellido, cuenta.telefono, cuenta.edad, cuenta.correo, tutor.descripcion,
+		idHorarioDisponibilidad,valoracionTotal,tutor_area.idArea, area_conocimiento.descripcion FROM cuenta INNER JOIN tutor INNER JOIN tutor_area 
+		INNER JOIN area_conocimiento on cuenta.idCuenta = tutor.idCuenta AND tutor.idCuenta = tutor_area.idTutor AND tutor_area.idArea = area_conocimiento.idArea 
+		and area_conocimiento.descripcion LIKE CONCAT('%',asignatura, '%') Group by cuenta.idCuenta;
 END$$
 delimiter ;

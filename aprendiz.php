@@ -1,5 +1,18 @@
+<?php
+
+session_start();
+
+if (!isset($_SESSION['Datos'])) {
+    // No existe la sesión
+    header("location:index.php");
+}
+
+    $listaTutores = Array();
+    include 'conexion.php';
+    include 'tutorClass.php';
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -28,7 +41,7 @@
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav text-uppercase ml-auto">
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizCuenta.php">Visualizar cuenta</a></li>
-                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizBuscTut.php">Buscar tutorías</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendiz.php">Buscar tutorías</a></li>
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizAgenda.php">Visualizar agenda</a></li>
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="cerrarSesion.php">Cerrar sesión</a></li>
                     </ul>
@@ -36,48 +49,73 @@
             </div>
         </nav>
         <!-- Masthead-->
-        <header class="masthead">
+        <header class="masthead" style="padding-bottom: 0rem">
             <div class="container">
                 <div class="masthead-subheading">¡Bienvenido a LearnEasy!</div>
                 <div class="masthead-heading text-uppercase">Nuestro objetivo es apoyarte</div>
                 <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#services">Conocer más</a>
             </div>
-        </header>
-        <!-- Services-->
-        <section class="page-section" id="services">
             <div class="container">
-                <div class="text-center">
-                    <h2 class="section-heading text-uppercase">Servicios</h2>
-                    <h3 class="section-subheading text-muted">Estos son algunos de los servicios que ofrecemos</h3>
-                </div>
-                <div class="row text-center">
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-shopping-cart fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">E-Commerce</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">Responsive Design</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">Web Security</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
+                <div class="row p-5 ">
+                    <div class="col-md-5 offset-md-0">
+                        <div class="container-fluid">
+                            <form class="d-flex" method="POST" name="searchForm" >
+                            <input name="areaTutor" class="form-control input-lg" type="search" placeholder="¿En que asignatura necesitas ayuda?" aria-label="Search">
+                            <button type="submit" name="btnBuscarTutor" class="btn btn-outline-warning">Buscar</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </header>
+        <!-- Services-->
+        <?php
+    if(isset($_POST["btnBuscarTutor"]))
+    {
+        $asignatura = $_POST['areaTutor'];
+        $asignatura = strtoupper($asignatura);
+        $Consulta= "CALL sp_BuscarArea('$asignatura')";
+
+        $Resultado= mysqli_query($Conexion,$Consulta);
+        $numCol = mysqli_num_fields($Resultado);
+        
+        if($numCol == 12)
+        {   
+            $aux = "";
+            echo "<section class='page-section' id='services'>";
+            echo "<div class='container'>";
+            echo "<div class='row row-cols-1 row-cols-md-3 g-4'>";
+            while($Row = $Resultado-> fetch_array()){
+                $maestro = new tutorClass();
+                $maestro->inicializar($Row[0],$Row[1],$Row[2],$Row[3],$Row[4],$Row[5],$Row[6],$Row[7],$Row[8],$Row[9]);
+                array_push($listaTutores,$maestro);
+                $aux = $Row[11];
+                //echo $Row[0].$Row[1].$Row[2].$Row[3].$Row[4].$Row[5].$Row[6].$Row[7].$Row[8].$Row[9];
+                //echo $maestro->get_nombreCompleto();
+            }
+            foreach($listaTutores as $key=>$tut){
+                echo "<div class='col'>";
+                echo    "<div class='card'>";
+                echo        "<img src='...' class='card-img-top' alt='...'>";
+                echo        "<div class='card-body'>";
+                echo            "<h5 class='card-title'>".$tut->get_nombreCompleto()."</h5>";
+                echo            "<p class='card-text'>".$tut->descripcion."</p>";
+                echo            "<div class='progress'>";
+                echo            "<div class='progress-bar progress-bar-striped bg-warning progress-bar-animated' role='progressbar' style='width: {$tut->get_valoracion()}%' aria-valuenow='{($tut->valoracionT)*20}' aria-valuemin='0' aria-valuemax='100'></div>";
+                echo            "</div>";
+                echo            "<p class='card-text'>".$tut->valoracionT."</p>";
+                echo            "<input id='".$tut->idTutor."' type='button' class='btn btn-outline-warning bg-dark' value='Ver perfil' onclick='verPerfil(event);' />";
+                echo            "&nbsp;&nbsp;<h8 class='card-text'>{$aux}</h8>";
+                echo        "</div>";
+                echo    "</div>";
+                echo "</div>";
+            }
+            echo "</div>";
+            echo "</div>";
+            echo "</section>";
+        }
+    }
+?>
         <!-- Footer-->
         <footer class="footer py-4">
             <div class="container">

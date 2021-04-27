@@ -10,26 +10,19 @@
     include 'conexion.php';
 
     $idCuenta = $_SESSION['Datos'][5];
-
     $Consulta="SELECT * FROM cuenta WHERE idCuenta='$idCuenta'";
-    $Resultado=mysqli_query($Conexion,$Consulta);
+    $Resultado=mysqli_query($Conexion, $Consulta);
     $numFilas = mysqli_num_rows($Resultado);
 
     while($Row = $Resultado->fetch_array()){
         $Nombre = $Row['nombre'];
         $PriApe = $Row['pApellido'];
         $SegApe = $Row['sApellido'];
-        $Pass = $Row['sApellido'];
-        $TelCel = $Row['sApellido'];
-        $Edad = $Row['sApellido'];
-        $SegApe = $Row['sApellido'];
-
+        $Correo = $Row['correo'];
+        $Pass1 = $Row['pass'];
+        $Telefono = $Row['telefono'];
+        $Edad = $Row['edad'];
     }
-
-    $_POST['tutorCuentaNombre'] = "TEST";
-
-
-
 
     if(isset($_POST["btnTutorActualizar"])){
         $tutorCuentaNombre = $_POST['tutorCuentaNombre'];
@@ -41,16 +34,10 @@
         $tutorCuentaCelular = $_POST['tutorCuentaCelular'];
         $tutorCuentaEdad = $_POST['tutorCuentaEdad'];
 
-        
-
-
-
-        $Consulta="INSERT INTO cuenta(idCuenta, nombre, pApellido, sApellido, correo, pass, idTipo, idAgenda, idHorario) VALUES ('','$tutorNombre','$tutorPriApe','$tutorSegApe','$tutorEmail','$tutorPass','T', NULL, NULL)";
+        $Consulta="UPDATE cuenta SET nombre='".$tutorCuentaNombre."', pApellido='".$tutorCuentaPriApe."', sApellido='".$tutorCuentaSegApe."', telefono='".$tutorCuentaCelular."', edad='".$tutorCuentaEdad."', correo='".$tutorCuentaEmail."', pass='".$tutorCuentaPass."' WHERE idCuenta = '$idCuenta'";
         $Ejecutar = mysqli_query($Conexion, $Consulta);
 
     }
-
-
 
 ?>
 
@@ -95,42 +82,46 @@
         <section class="page-section" id="contact">
             <div class="container">
                 <div class="text-center">
-                    <h2 class="section-heading text-uppercase">A continuación podrás modificar los datos de tu cuenta</h2>
-                    <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
+                    <h2 class="section-heading text-uppercase">MI CUENTA</h2>
+                    <h3 class="section-subheading text-muted">A continuación podrás modificar los datos de tu cuenta</h3>
                 </div>
                 <form id="tutorCuentaForm" method="POST" name="tutorCuentaForm" novalidate="novalidate">
                     <div class="row align-items-stretch mb-5">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <input class="form-control" name="tutorCuentaNombre" type="text" placeholder="Nombre *" required="required" data-validation-required-message="Por favor ingresa tu nombre" />
+                                <input class="form-control" name="tutorCuentaNombre" type="text" placeholder="Nombre *" value="<?php echo $Nombre;?>" required="required" data-validation-required-message="Por favor ingresa tu nombre" />
                                 <p class="help-block text-danger"></p>
                             </div>
                             <div class="form-group">
-                                <input class="form-control" name="tutorCuentaPriApe" type="email" placeholder="Primer apellido *" required="required" data-validation-required-message="Por favor ingresa tu primer apellido" />
+                                <input class="form-control" name="tutorCuentaPriApe" type="email" placeholder="Primer apellido *" value="<?php echo $PriApe;?>" required="required" data-validation-required-message="Por favor ingresa tu primer apellido" />
                                 <p class="help-block text-danger"></p>
                             </div>
                             <div class="form-group">
-                                <input class="form-control" name="tutorCuentaSegApe" type="text" placeholder="Segundo apellido *" required="required" data-validation-required-message="Por favor ingresa tu segundo apellido" />
+                                <input class="form-control" name="tutorCuentaSegApe" type="text" placeholder="Segundo apellido *" value="<?php echo $SegApe;?>" required="required" data-validation-required-message="Por favor ingresa tu segundo apellido" />
                                 <p class="help-block text-danger"></p>
                             </div>
                             <div class="form-group">
-                                <input class="form-control" name="tutorCuentaEmail" type="text" placeholder="Correo electrónico *" required="required" data-validation-required-message="Por favor ingresa tu correo electrónico" />
+                                <input class="form-control" name="tutorCuentaEmail" type="text" placeholder="Correo electrónico *" value="<?php echo $Correo;?>"  required="required" data-validation-required-message="Por favor ingresa tu correo electrónico" />
                                 <p class="help-block text-danger"></p>
                             </div>
                             <div class="form-group">
-                                <input class="form-control" name="tutorCuentaPass" type="password" placeholder="Contraseña *" required="required" data-validation-required-message="Por favor ingresa tu contraseña" />
+                                <input class="form-control" name="tutorCuentaPassA" type="password" placeholder="Contraseña original *" value="<?php echo $Pass1;?>"  required="required" data-validation-required-message="Por favor ingresa tu contraseña" />
                                 <p class="help-block text-danger"></p>
                             </div>
                             <div class="form-group">
-                                <input class="form-control" name="tutorCuentaPassV" type="password" placeholder="Ingresa tu contraseña nuevamente *" required="required" data-validation-required-message="Por favor ingresa tu contraseña nuevamente" />
+                                <input class="form-control" name="tutorCuentaPass" type="password" placeholder="Nueva contraseña *" value="<?php ?>"  data-validation-required-message="Por favor ingresa tu contraseña" />
                                 <p class="help-block text-danger"></p>
                             </div>
                             <div class="form-group">
-                                <input class="form-control" name="tutorCuentaCelular" type="text" placeholder="Teléfono celular"/>
+                                <input class="form-control" name="tutorCuentaPassV" type="password" placeholder="Ingresa tu contraseña nuevamente *" value="<?php echo $Pass1;?>"  data-validation-required-message="Por favor ingresa tu contraseña nuevamente" />
                                 <p class="help-block text-danger"></p>
                             </div>
                             <div class="form-group">
-                                <input class="form-control" name="tutorCuentaEdad" type="number" placeholder="Edad *" required="required" data-validation-required-message="Por favor ingresa tu edad"/>
+                                <input class="form-control" name="tutorCuentaCelular" type="text" placeholder="Teléfono celular" value="<?php echo $Telefono;?>" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" name="tutorCuentaEdad" type="number" placeholder="Edad *" value="<?php echo $Edad;?>" required="required" data-validation-required-message="Por favor ingresa tu edad"/>
                                 <p class="help-block text-danger"></p>
                             </div>
                         </div>

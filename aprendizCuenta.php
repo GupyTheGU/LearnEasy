@@ -1,3 +1,46 @@
+<?php
+
+    session_start();
+
+    if (!isset($_SESSION['Datos'])) {
+        // No existe la sesión
+        header("location:index.php");
+    }
+
+    include 'conexion.php';
+
+    $idCuenta = $_SESSION['Datos'][5];
+    $Consulta="SELECT * FROM cuenta WHERE idCuenta='$idCuenta'";
+    $Resultado=mysqli_query($Conexion, $Consulta);
+    $numFilas = mysqli_num_rows($Resultado);
+
+    while($Row = $Resultado->fetch_array()){
+        $Nombre = $Row['nombre'];
+        $PriApe = $Row['pApellido'];
+        $SegApe = $Row['sApellido'];
+        $Correo = $Row['correo'];
+        $Pass1 = $Row['pass'];
+        $Telefono = $Row['telefono'];
+        $Edad = $Row['edad'];
+    }
+
+    if(isset($_POST["btnAprendizActualizar"])){
+        $aprendizCuentaNombre = $_POST['aprendizCuentaNombre'];
+        $aprendizCuentaPriApe = $_POST['aprendizCuentaPriApe'];
+        $aprendizCuentaSegApe = $_POST['aprendizCuentaSegApe'];
+        $aprendizCuentaEmail = $_POST['aprendizCuentaEmail'];
+        $aprendizCuentaPass = $_POST['aprendizCuentaPass'];
+        $aprendizCuentaPassV = $_POST['aprendizCuentaPassV'];
+        $aprendizCuentaCelular = $_POST['aprendizCuentaCelular'];
+        $aprendizCuentaEdad = $_POST['aprendizCuentaEdad'];
+
+        $Consulta="UPDATE cuenta SET nombre='".$aprendizCuentaNombre."', pApellido='".$aprendizCuentaPriApe."', sApellido='".$aprendizCuentaSegApe."', telefono='".$aprendizCuentaCelular."', edad='".$aprendizCuentaEdad."', correo='".$aprendizCuentaEmail."', pass='".$aprendizCuentaPass."' WHERE idCuenta = '$idCuenta'";
+        $Ejecutar = mysqli_query($Conexion, $Consulta);
+
+    }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -5,7 +48,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>LearnEasy - Página principal de aprendiz</title>
+        <title>LearnEasy - Cuenta de tutor</title>
         <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
@@ -28,54 +71,73 @@
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav text-uppercase ml-auto">
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizCuenta.php">Visualizar cuenta</a></li>
-                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizBuscTut.php">Buscar tutorías</a></li>
-                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizAgenda.php">Visualizar agenda</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendiz.php">Buscar Tutorías</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizAgenda.php">Consultar agenda</a></li>
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="cerrarSesion.php">Cerrar sesión</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
-        <!-- Masthead-->
-        <header class="masthead">
-            <div class="container">
-                <div class="masthead-subheading">¡Bienvenido a LearnEasy!</div>
-                <div class="masthead-heading text-uppercase">Nuestro objetivo es apoyarte</div>
-                <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#services">Conocer más</a>
-            </div>
-        </header>
-        <!-- Services-->
-        <section class="page-section" id="services">
+        <!-- Contact-->
+        <section class="page-section" id="contact">
             <div class="container">
                 <div class="text-center">
-                    <h2 class="section-heading text-uppercase">Servicios</h2>
-                    <h3 class="section-subheading text-muted">Estos son algunos de los servicios que ofrecemos</h3>
+                    <h2 class="section-heading text-uppercase">MI CUENTA</h2>
+                    <h3 class="section-subheading text-muted">A continuación podrás modificar los datos de tu cuenta</h3>
                 </div>
-                <div class="row text-center">
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-shopping-cart fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">E-Commerce</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
+                <form id="aprendizCuentaForm" method="POST" name="aprendizCuentaForm" novalidate="novalidate">
+                    <div class="row align-items-stretch mb-5">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input class="form-control" name="aprendizCuentaNombre" type="text" placeholder="Nombre *" value="<?php echo $Nombre;?>" required="required" data-validation-required-message="Por favor ingresa tu nombre" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" name="aprendizCuentaPriApe" type="email" placeholder="Primer apellido *" value="<?php echo $PriApe;?>" required="required" data-validation-required-message="Por favor ingresa tu primer apellido" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" name="aprendizCuentaSegApe" type="text" placeholder="Segundo apellido *" value="<?php echo $SegApe;?>" required="required" data-validation-required-message="Por favor ingresa tu segundo apellido" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" name="aprendizCuentaEmail" type="text" placeholder="Correo electrónico *" value="<?php echo $Correo;?>"  required="required" data-validation-required-message="Por favor ingresa tu correo electrónico" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" name="aprendizCuentaPassA" type="password" placeholder="Contraseña original *" value="<?php echo $Pass1;?>"  required="required" data-validation-required-message="Por favor ingresa tu contraseña" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" name="aprendizCuentaPass" type="password" placeholder="Nueva contraseña *" value="<?php ?>"  data-validation-required-message="Por favor ingresa tu contraseña" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" name="aprendizCuentaPassV" type="password" placeholder="Ingresa tu contraseña nuevamente *" value="<?php echo $Pass1;?>"  data-validation-required-message="Por favor ingresa tu contraseña nuevamente" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" name="aprendizCuentaCelular" type="text" placeholder="Teléfono celular" value="<?php echo $Telefono;?>" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" name="aprendizCuentaEdad" type="number" placeholder="Edad *" value="<?php echo $Edad;?>" required="required" data-validation-required-message="Por favor ingresa tu edad"/>
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group form-group-textarea mb-md-0">
+                                <!-- <button class="btn btn-primary btn-xl text-uppercase" id="sendMessageButton" type="submit">Iniciar sesión</button> -->
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">Responsive Design</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
+                    <div>
+                        <div id="success"></div>
+                        <button class="btn btn-primary btn-xl text-uppercase" name="btnAprendizActualizar" type="submit">Actualizar datos</button>
                     </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">Web Security</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
-                    </div>
-                </div>
+                    
+                </form>
             </div>
         </section>
         <!-- Footer-->

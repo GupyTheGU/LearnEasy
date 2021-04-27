@@ -1,3 +1,79 @@
+<?php
+
+session_start();
+
+    if (isset($_SESSION['Datos']) && sizeof($_SESSION['Datos']) > 0) {
+        // Existe la sesión
+        if($_SESSION['Datos'][4] == 'T'){
+            header("location:tutor.php");
+        }
+        if($_SESSION['Datos'][4] == 'A'){
+            header("location:aprendiz.php");
+        }
+    }
+
+    include 'conexion.php';
+
+    if(isset($_POST["btnIniciarSesion"]))
+    {
+        $LoginEmail = $_POST['loginEmail'];
+        $LoginPass = $_POST['loginPassword'];
+
+        $Consulta= "CALL sp_iniciaSesion('$LoginEmail','$LoginPass')";
+
+        $Resultado= mysqli_query($Conexion,$Consulta);
+        $numCol = mysqli_num_fields($Resultado);
+        
+        if($numCol == 2)
+        {
+            while($Row = $Resultado-> fetch_array()){
+                $existe = $Row[0];
+                $idCuenta = $Row[1];
+                echo $existe." -existe-".$idCuenta."-idCuenta";
+            }
+            $Consulta="SELECT * FROM cuenta WHERE idCuenta='$idCuenta'";
+            mysqli_free_result($Resultado);
+            do 
+                if($Resultado=mysqli_store_result($Conexion)){
+                    mysqli_free_result($Resultado);
+            } while(mysqli_more_results($Conexion) && mysqli_next_result($Conexion));
+
+            $Resultado= mysqli_query($Conexion,$Consulta);
+    
+            while($Row = $Resultado->fetch_array()){
+                $Nombre = $Row['nombre'];
+                $PriApe = $Row['pApellido'];
+                $SegApe = $Row['sApellido'];
+                $idTipo = $Row['idTipo'];
+                $idHorario = $Row['idHorario'];
+            }
+
+            if($idTipo == 'T'){
+                $Tutor = 1;
+                $Aprendiz = 0;
+            } else if($idTipo == 'A'){
+                $Tutor = 0;
+                $Aprendiz = 1;
+            }
+
+            $_SESSION['Datos'] = Array();
+            array_push($Nombre, $PriApe, $SegApe, $LoginEmail, $idTipo, $idCuenta, $idHorario);
+            if($Tutor == 1){
+                echo("es tutor");
+               header("location:tutor.php");
+            } else {
+                echo("es aprendiz");
+               header("location:aprendiz.php");
+            }
+        } 
+        else 
+        {
+            //header("Refresh: 0; URL=login.php");
+        }
+    }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -5,7 +81,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>LearnEasy - Página principal de aprendiz</title>
+        <title>LearnEasy - Inicio de sesión</title>
         <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
@@ -27,22 +103,45 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav text-uppercase ml-auto">
-                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizCuenta.php">Visualizar cuenta</a></li>
-                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendiz.php">Buscar tutorías</a></li>
-                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizAgenda.php">Visualizar agenda</a></li>
-                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="cerrarSesion.php">Cerrar sesión</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="registrar.php">Registrarse</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
-        <!-- Masthead-->
-        <header class="masthead">
+        <!-- Contact -->
+        <section class="page-section" id="contact">
             <div class="container">
-                <div class="masthead-subheading">¡Bienvenido a LearnEasy!</div>
-                <div class="masthead-heading text-uppercase">Nuestro objetivo es apoyarte</div>
-                <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#services">Conocer más</a>
+                <div class="text-center">
+                    <h2 class="section-heading text-uppercase">Iniciar sesión</h2>
+                    <h3 class="section-subheading text-muted">Ingresa los datos solicitados</h3>
+                </div>
+                <form id="loginForm" method="POST" name="loginForm" novalidate="novalidate" >
+                    <div class="row align-items-stretch mb-5">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input class="form-control" name="loginEmail" type="email" placeholder="Correo electrónico *" required="required" data-validation-required-message="Por favor ingresa tu correo electrónico" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" name="loginPassword" type="password" placeholder="Contraseña *" required="required" data-validation-required-message="Por favor ingresa tu contraseña" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group form-group-textarea mb-md-0">
+                                <!-- <button class="btn btn-primary btn-xl text-uppercase" id="sendMessageButton" type="submit">Iniciar sesión</button> -->
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div id="success"></div>
+                        <button class="btn btn-primary btn-xl text-uppercase" name="btnIniciarSesion" id="sendMessageButton" type="submit">Iniciar sesión</button>
+                    </div>
+                </form>
             </div>
-        </header>
+        </section>
         <!-- Services-->
         <section class="page-section" id="services">
             <div class="container">
@@ -98,3 +197,4 @@
         <script src="js/scripts.js"></script>
     </body>
 </html>
+
