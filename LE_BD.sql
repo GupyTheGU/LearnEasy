@@ -58,6 +58,12 @@ CREATE TABLE REL_HORARIO_PERIODO(
 	PRIMARY KEY(idHorario, idPeriodo)
 );
 
+CREATE TABLE REL_HORARIO_TUTORIA(
+	idHorario INT UNSIGNED NOT NULL,
+	idTutoria INT UNSIGNED NOT NULL,
+	PRIMARY KEY(idHorario, idTutoria)
+);
+
 CREATE TABLE PERIODO(
 	idPeriodo INT UNSIGNED NOT NULL,
 	fecha		 DATE NOT NULL,
@@ -254,6 +260,10 @@ CREATE PROCEDURE sp_registrarTutoria (IN idSol INT UNSIGNED, IN nombre VARCHAR(4
 BEGIN
 		DECLARE existe INT DEFAULT 0;
 		DECLARE idCont INT DEFAULT 0;
+		DECLARE idAlum INT UNSIGNED DEFAULT 0;
+		DECLARE idProf INT UNSIGNED DEFAULT 0;
+		DECLARE horarioAlum INT UNSIGNED DEFAULT 0;
+		DECLARE horarioProf INT UNSIGNED DEFAULT 0;
 		
 		set idCont =(select count(*)from EVENTO WHERE idEvento = idSol);
 		if idCont = 0 then
@@ -262,8 +272,14 @@ BEGIN
 			SET idCont = (select estadoSolicitud from Solicitud WHERE idSolicitud = idSol);
 			SET idCont = (SELECT STRCMP(idCont,'0'));
 			if idCont = 0 then
+				SET idAlum = (SELECT idAprendiz FROM evento WHERE idEvento = idSol);
+				SET idProf = (SELECT idTutor FROM evento WHERE idEvento = idSol);
+				SET horarioAlum = (SELECT idHorario FROM cuenta WHERE idCuenta = idAlum);
+				SET horarioProf = (SELECT idHorario FROM cuenta WHERE idCuenta = idProf);
 				INSERT INTO TUTORIA(idTutoria,nombreTutoria)VALUES(idSol,nombre);
 				UPDATE solicitud SET estadoSolicitud = '1' WHERE idSolicitud = idSol;
+				INSERT INTO rel_horario_Tutoria(idHorario,idTutoria)VALUES(horarioAlum,idSol);
+				INSERT INTO rel_horario_Tutoria(idHorario,idTutoria)VALUES(horarioProf,idSol);
 				SET existe = -1;
 				SELECT existe;
 			else
