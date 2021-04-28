@@ -33,7 +33,6 @@
         $tutorCuentaPassV = $_POST['tutorCuentaPassV'];
         $tutorCuentaCelular = $_POST['tutorCuentaCelular'];
         $tutorCuentaEdad = $_POST['tutorCuentaEdad'];
-
         $Consulta="UPDATE cuenta SET nombre='".$tutorCuentaNombre."', pApellido='".$tutorCuentaPriApe."', sApellido='".$tutorCuentaSegApe."', telefono='".$tutorCuentaCelular."', edad='".$tutorCuentaEdad."', correo='".$tutorCuentaEmail."', pass='".$tutorCuentaPass."' WHERE idCuenta = '$idCuenta'";
         $Ejecutar = mysqli_query($Conexion, $Consulta);
 

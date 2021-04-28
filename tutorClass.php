@@ -12,11 +12,12 @@
         public $valoracionT;
         public $areas  = Array();
         public $valoraciones  = Array();
+        public $precios = Array();
 
         public function __construct(){
             
         }
-        public function inicializar($id,$nom,$paterno,$materno="",$tel,$age,$mail,$desc="",$idHorariodisponibilidad,$puntos){
+        public function inicializar($id,$nom,$paterno,$materno="",$tel,$age,$mail,$desc="",$idHorariodisponibilidad=0,$puntos){
             $this->idTutor = $id;
             $this->nombre = $nom;
             $this->pApellido = $paterno;
@@ -46,7 +47,26 @@
             $asignatura = Array();
             array_push($asignatura,$idArea,$areaDesc);
             array_push($this->areas, $asignatura);
+            //print_r($asignatura);
         }
+
+        public function add_precio($idCosto, $desc,$monto,$tipoTutoria){
+            $plan = Array();
+            array_push($plan,$idCosto,$desc,$monto,$tipoTutoria);
+            array_push($this->precios, $plan);
+            //print_r($plan);
+        }
+
+        public function get_tipoTutoria($plan){
+            $variable = $plan[3];
+
+            if(strcmp($variable,'E')==0){
+                return "Extendido";
+            }else{
+                return "Individual";
+            }
+        }
+
     }
 
 ?>

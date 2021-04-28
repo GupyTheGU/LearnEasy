@@ -7,6 +7,61 @@
         header("location:index.php");
     }
 
+    include 'conexion.php';
+    include 'tutorClass.php';
+    
+    $idCuenta = $_SESSION['Datos'][5];
+
+    $Consulta="SELECT * FROM cuenta WHERE idCuenta='$idCuenta'";
+    $Resultado=mysqli_query($Conexion, $Consulta);
+
+    while($Row = $Resultado->fetch_array()){
+        $Nombre = $Row['nombre'];
+        $PriApe = $Row['pApellido'];
+        $SegApe = $Row['sApellido'];
+        $Correo = $Row['correo'];
+        $Pass1 = $Row['pass'];
+        $Telefono = $Row['telefono'];
+        $Edad = $Row['edad'];
+    }
+
+    $Consulta2="SELECT * FROM tutor WHERE idCuenta='$idCuenta'";
+    $Resultado2=mysqli_query($Conexion, $Consulta2);
+
+    while($Row2 = $Resultado2->fetch_array()){
+        $Descripcion = $Row2['descripcion'];
+        $idHorarioDisp = $Row2['idHorarioDisponibilidad'];
+        $Valoracion = $Row2['valoracionTotal'];
+    }
+
+    $maestro = new tutorClass();
+    $maestro->inicializar($idCuenta,$Nombre,$PriApe,$SegApe,$Telefono,$Edad,$Correo,$Descripcion,$idHorarioDisp,$Valoracion);
+    $Consulta3="SELECT * FROM area_conocimiento inner Join tutor_area on area_conocimiento.idArea=tutor_area.idArea where tutor_area.idTutor='$idCuenta'";
+    $Resultado3=mysqli_query($Conexion, $Consulta3);
+    while($Row3 = $Resultado3->fetch_array()){
+        $maestro->add_areaConocimiento($Row3['idArea'],$Row3['descripcion']);
+    }
+
+    $Consulta4 = "SELECT * FROM costos_tutor where idTutor='$idCuenta'";
+    $Resultado4=mysqli_query($Conexion, $Consulta4);
+    while($Row4 = $Resultado4->fetch_array()){
+        $maestro->add_precio($Row4['idCosto'],$Row4['descripcion'],$Row4['monto'],$Row4['tipoTutoria']);
+    }
+/*
+    $array_final = array();
+    foreach ($Resultado3 as $result){
+       $array_final[] = $result;
+    }
+    print_r($array_final);
+
+    
+    while($Row3 = $Resultado3->fetch_array()){
+        $Descripcion = $Row2['descripcion'];
+        $Valoracion = $Row2['valoracionTotal'];
+    }
+*/
+
+
 ?>
 
 <!DOCTYPE html>
@@ -29,7 +84,7 @@
     </head>
     <body id="page-top">
         <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
             <div class="container">
                 <a class="navbar-brand js-scroll-trigger" href="index.php"><img src="assets/img/navbar-logo.svg" alt="" /></a>
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,45 +102,63 @@
             </div>
         </nav>
         <!-- Masthead-->
-        <header class="masthead">
-            <div class="container">
-                <div class="masthead-subheading">¡Bienvenido a LearnEasy!</div>
-                <div class="masthead-heading text-uppercase">Nuestro objetivo es apoyarte</div>
-                <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#services">Conocer más</a>
-            </div>
-        </header>
         <!-- Services-->
         <section class="page-section" id="services">
             <div class="container">
+
                 <div class="text-center">
-                    <h2 class="section-heading text-uppercase">Servicios</h2>
-                    <h3 class="section-subheading text-muted">Estos son algunos de los servicios que ofrecemos</h3>
+                    <h2 class="section-heading text-uppercase"><?php echo $maestro->get_nombreCompleto(); ?></h2>
+                    <?php
+                        echo            "<div class='progress'>";
+                        echo            "<div class='progress-bar progress-bar-striped bg-warning progress-bar-animated' role='progressbar' style='width: {$maestro->get_valoracion()}%' aria-valuenow='{$maestro->get_valoracion()}' aria-valuemin='0' aria-valuemax='100'></div>";
+                        echo            "</div>";
+                    ?>
+                    <h4 class="my-3 text-muted"><?php echo $maestro->valoracionT; ?></h4>
                 </div>
+
                 <div class="row text-center">
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <span class="fa-stack fa-4x">
                             <i class="fas fa-circle fa-stack-2x text-primary"></i>
                             <i class="fas fa-shopping-cart fa-stack-1x fa-inverse"></i>
                         </span>
-                        <h4 class="my-3">E-Commerce</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
+                        <h4 class="my-3">Mi lista de precios</h4>
+                        <?php
+                            foreach($maestro->precios as $plan){
+                                echo "<div class='card text-dark bg-light mb-3' style='max-width: 18rem;'>";
+                                echo "<div class='card-header'>$ {$plan[2]}</div>";
+                                echo "<div class='card-body'>";
+                                echo "    <h6 class='card-title'>{$maestro->get_tipoTutoria($plan)}</h6>";
+                                echo "    <p class='card-text'>{$plan[1]}</p>";
+                                echo "</div>";
+                                echo "</div>";
+                            }
+                        ?>
                     </div>
-                    <div class="col-md-4">
+
+                    <div class="col-md-8">
+                    <h4 class="my-3"></h4>
+                        <p class="text-muted"><?php echo $maestro->descripcion;?></p>
                         <span class="fa-stack fa-4x">
                             <i class="fas fa-circle fa-stack-2x text-primary"></i>
                             <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
                         </span>
-                        <h4 class="my-3">Responsive Design</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
                     </div>
-                    <div class="col-md-4">
+
+                    <div class="col-md-2">
                         <span class="fa-stack fa-4x">
                             <i class="fas fa-circle fa-stack-2x text-primary"></i>
                             <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
                         </span>
-                        <h4 class="my-3">Web Security</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
-                    </div>
+                        <h4 class="my-3">Tutorías</h4>
+                            <ul class="list-group list-group-flush">
+                        <?php
+                            foreach($maestro->areas as $materia){
+                                echo "<li class=list-group-item>{$materia[1]}</li>";
+                            }
+                        ?>
+                            </ul>
+                    </div>               
                 </div>
             </div>
         </section>

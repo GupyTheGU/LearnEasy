@@ -29,6 +29,7 @@ session_start();
             $SegApe = $Row['sApellido'];
             $idTipo = $Row['idTipo'];
             $idCuenta = $Row['idCuenta'];
+            $idHorario = $Row['idHorario'];
         }
 
         if($idTipo == 'T'){
@@ -42,7 +43,7 @@ session_start();
         if($numFilas==1)
         {
             $_SESSION['Datos'] = array();
-            array_push($_SESSION['Datos'], $Nombre, $PriApe, $SegApe, $LoginEmail, $idTipo, $idCuenta);
+            array_push($_SESSION['Datos'], $Nombre, $PriApe, $SegApe, $LoginEmail, $idTipo, $idCuenta, $idHorario);
             if($Tutor == 1){
                header("location:tutor.php");
             } else {
