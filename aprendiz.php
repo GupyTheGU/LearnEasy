@@ -104,7 +104,8 @@ if (!isset($_SESSION['Datos'])) {
                 echo            "<div class='progress-bar progress-bar-striped bg-warning progress-bar-animated' role='progressbar' style='width: {$tut->get_valoracion()}%' aria-valuenow='{($tut->valoracionT)*20}' aria-valuemin='0' aria-valuemax='100'></div>";
                 echo            "</div>";
                 echo            "<p class='card-text'>".$tut->valoracionT."</p>";
-                echo            "<input id='".$tut->idTutor."' type='button' class='btn btn-outline-warning bg-dark' value='Ver perfil' onclick='verPerfil(event);' />";
+                echo            "<form class='d-flex' method='POST' action='verPerfil.php'>";
+                echo            "<input type='submit' class='btn btn-outline-warning bg-dark' value='Ver perfil'/>";
                 echo            "&nbsp;&nbsp;<h8 class='card-text'>{$aux}</h8>";
                 echo        "</div>";
                 echo    "</div>";

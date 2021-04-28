@@ -19,7 +19,7 @@ CREATE TABLE CUENTA(
 
 CREATE TABLE TUTOR(
 	idCuenta		INT UNSIGNED NOT NULL,		
-	descripcion	VARCHAR(400),
+	descripcion	VARCHAR(2000),
 	idHorarioDisponibilidad INT UNSIGNED DEFAULT NULL,
 	valoracionTotal	DECIMAL(2,1) DEFAULT 0.0,
 	PRIMARY KEY(idCuenta)
@@ -167,7 +167,7 @@ ALTER TABLE TUTOR_AREA
 delimiter $$
 CREATE PROCEDURE sp_registroCuentaAux(IN nomb VARCHAR(30),IN materno VARCHAR(30),IN paterno VARCHAR(30),IN telefonico VARCHAR(10),IN age DECIMAL(3,0),IN mail VARCHAR(30),IN contra VARCHAR(30), IN tipo CHAR(1))
 BEGIN
-		declare idCont 	int UNSIGNED DEFAULT 0;
+	declare idCont 	int UNSIGNED DEFAULT 0;
    	declare existe		int default 0;
    	DECLARE idAux       INT UNSIGNED DEFAULT 0;
    	

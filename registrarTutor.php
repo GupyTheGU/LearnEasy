@@ -24,7 +24,8 @@ session_start();
         $tutorCelular = $_POST['tutorCelular'];
         $tutorEdad = $_POST['tutorEdad'];
 
-        $Consulta="INSERT INTO cuenta(idCuenta, nombre, pApellido, sApellido, correo, pass, idTipo, idAgenda, idHorario) VALUES ('','$tutorNombre','$tutorPriApe','$tutorSegApe','$tutorEmail','$tutorPass','T', NULL, NULL)";
+        $Consulta = "CALL sp_registroCuenta('{$tutorNombre}','{$tutorPriApe}','{$tutorSegApe}','{$tutorCelular}',{$tutorEdad},'{$tutorEmail}','{$tutorPass}','T');";
+        //$Consulta="INSERT INTO cuenta(idCuenta, nombre, pApellido, sApellido, correo, pass, idTipo, idAgenda, idHorario) VALUES ('','$tutorNombre','$tutorPriApe','$tutorSegApe','$tutorEmail','$tutorPass','T', NULL, NULL)";
         $Ejecutar = mysqli_query($Conexion, $Consulta);
 
     }

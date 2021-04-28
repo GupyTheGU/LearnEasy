@@ -10,7 +10,8 @@
     include 'conexion.php';
     include 'tutorClass.php';
     
-    $idCuenta = $_SESSION['Datos'][7];
+    
+    $idCuenta = $_SESSION['Datos'][7]; //ID DEL TUTOR SELECCIONADO
 
     $Consulta="SELECT * FROM cuenta WHERE idCuenta='$idCuenta'";
     $Resultado=mysqli_query($Conexion, $Consulta);

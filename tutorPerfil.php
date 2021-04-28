@@ -47,6 +47,33 @@
     while($Row4 = $Resultado4->fetch_array()){
         $maestro->add_precio($Row4['idCosto'],$Row4['descripcion'],$Row4['monto'],$Row4['tipoTutoria']);
     }
+
+    if(isset($_POST["btnAddCosto"])){
+        $Consulta="INSERT INTO costos_tutor(idTutor, descripcion, monto, tipoTutoria) VALUES ({$idCuenta}, '{$_POST['txtDesCosto']}',{$_POST['txtMontoCosto']},'{$_POST[txtTipoCosto]}');";
+        $Ejecutar = mysqli_query($Conexion, $Consulta);
+        header("location:tutorPerfil.php");
+    }
+
+    if(isset($_POST["btnModDesc"])){
+        $Consulta="UPDATE TUTOR SET descripcion = '{$_POST['textareaDesc']}' Where idCuenta = {$idCuenta};";
+        $Ejecutar = mysqli_query($Conexion, $Consulta);
+        header("location:tutorPerfil.php");
+    }
+
+    if(isset($_POST["btnAddArea"])){
+        $Consulta="INSERT INTO area_conocimiento(descripcion)VALUES('".$_POST['txtMateria']."');";
+        $Ejecutar = mysqli_query($Conexion, $Consulta);
+
+        $Consulta2="SELECT * FROM area_conocimiento WHERE descripcion='".$_POST['txtMateria']."';";
+        $Resultado5 = mysqli_query($Conexion, $Consulta2);
+        while($Row5 = $Resultado5->fetch_array()){
+            $idArea = $Row5['idArea'];
+        }
+
+        $Consulta3="INSERT INTO tutor_area(idTutor,idArea)VALUES({$idCuenta},{$idArea});";
+        $Ejecutar2 = mysqli_query($Conexion, $Consulta3);
+        header("location:tutorPerfil.php");
+    }
 /*
     $array_final = array();
     foreach ($Resultado3 as $result){
@@ -84,7 +111,7 @@
     </head>
     <body id="page-top">
         <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
             <div class="container">
                 <a class="navbar-brand js-scroll-trigger" href="index.php"><img src="assets/img/navbar-logo.svg" alt="" /></a>
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,6 +130,7 @@
         </nav>
         <!-- Masthead-->
         <!-- Services-->
+        
         <section class="page-section" id="services">
             <div class="container">
 
@@ -134,16 +162,21 @@
                                 echo "</div>";
                             }
                         ?>
+                        <form class="input-group" method="POST"  name='formAddCosto'>
+                            <input type="text" class="form-control" placeholder="Descripcion" name='txtDesCosto'/>
+                            <input type="numeric" class="form-control" placeholder="Monto" name='txtMontoCosto'/>
+                            <input typy="text" class="form-control" placeholder="Tipo Tutoria" name='txtTipoCosto'/>
+                            <button class="btn btn-primary btn-lg bg-dark" name='btnAddCosto' type="submit">+</button>
+                        </form>
                     </div>
 
                     <div class="col-md-8">
-                    <h4 class="my-3"></h4>
-                        <p class="text-muted"><?php echo $maestro->descripcion;?></p>
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
-                        </span>
-                    </div>
+                            <h4 class="my-3"></h4>
+                              <form class="d-flex" method="POST">
+                              <textarea class="form-control border-0" name="textareaDesc" id="textareaDesc" rows="10" cols="80"><?php echo $maestro->descripcion;?></textarea>
+                              <button name="btnModDesc" class="btn btn-primary btn-lg bg-dark" type="submit">Editar</button>
+                              </form>
+                     </div>
 
                     <div class="col-md-2">
                         <span class="fa-stack fa-4x">
@@ -158,6 +191,10 @@
                             }
                         ?>
                             </ul>
+                            <form class="input-group" method="POST"  name='formAddArea'>
+                            <input type="text" class="form-control" placeholder="Especialización" name='txtMateria'/>
+                            <button class="btn btn-primary btn-lg bg-dark" name='btnAddArea' type="submit">+</button>
+                            </form>
                     </div>               
                 </div>
             </div>
