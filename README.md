@@ -7,6 +7,7 @@ Aplicación web para tutorías personalizadas pudiendo elegir si ser un tutor o 
 - MariaDB 10.4.19
 - phpMyAdmin 5.1.0
 - Bootstrap 5
+
 -> Videoconferencias generadas en Jitsi
 -> Libreria FPDF
 -> Desplegada en Hostinger 
