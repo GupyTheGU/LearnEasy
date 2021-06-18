@@ -8,9 +8,9 @@ Aplicación web para tutorías personalizadas pudiendo elegir si ser un tutor o 
 - phpMyAdmin 5.1.0
 - Bootstrap 5
 
-Videoconferencias generadas en Jitsi
-Libreria FPDF
-Desplegada en Hostinger 
+- Videoconferencias generadas en Jitsi
+- Libreria FPDF
+- Desplegada en Hostinger 
 
 ## Team
 - Cirigo Zitlaly
