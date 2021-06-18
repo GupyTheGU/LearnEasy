@@ -49,42 +49,48 @@
         <!-- Masthead-->
         <header class="masthead">
             <div class="container">
-                <div class="masthead-subheading">¡Bienvenido a LearnEasy!</div>
+                <div class="masthead-subheading">¡Bienvenido a LearnEasy <?php echo $_SESSION['Datos'][0] ?>!</div>
                 <div class="masthead-heading text-uppercase">Nuestro objetivo es apoyarte</div>
-                <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#services">Conocer más</a>
+                <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#comenzar">Por dónde comenzar</a>
             </div>
         </header>
         <!-- Services-->
-        <section class="page-section" id="services">
+        <section class="page-section" id="comenzar">
             <div class="container">
                 <div class="text-center">
-                    <h2 class="section-heading text-uppercase">Servicios</h2>
-                    <h3 class="section-subheading text-muted">Estos son algunos de los servicios que ofrecemos</h3>
+                    <h2 class="section-heading text-uppercase">Opciones disponibles</h2>
+                    <br/>
                 </div>
                 <div class="row text-center">
                     <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-shopping-cart fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">E-Commerce</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">Responsive Design</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
-                    </div>
-                    <div class="col-md-4">
+                    <a href="tutorCuenta.php">
                         <span class="fa-stack fa-4x">
                             <i class="fas fa-circle fa-stack-2x text-primary"></i>
                             <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
                         </span>
-                        <h4 class="my-3">Web Security</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
+                        <h4 class="my-3">Visualizar cuenta</h4>
+                        </a>
+                        <p class="text-muted">Dentro de esta opción podrás realizar las modificaciones que requieras dentro de tu cuenta</p>
+                    </div>
+                    <div class="col-md-4">
+                    <a href="tutorPerfil.php">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">Visualizar perfil</h4>
+                        </a>
+                        <p class="text-muted">Aquí podrás realizar los cambios que sean necesarios en tu perfil</p>
+                    </div>
+                    <div class="col-md-4">
+                    <a href="tutorAgenda.php">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">Consultar agenda</h4>
+                        </a>
+                        <p class="text-muted">Dentro de está opción encontrarás todo lo relacionado a las tutorías que impartes actualmente</p>
                     </div>
                 </div>
             </div>

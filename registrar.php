@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+    session_start();
 
     if (isset($_SESSION['Datos'])) {
         // Existe la sesión
@@ -13,7 +13,6 @@ session_start();
     }
 
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,7 +55,8 @@ session_start();
             <div class="container">
                 <div class="text-center">
                     <h2 class="section-heading text-uppercase">Registro</h2>
-                    <h3 class="section-subheading text-muted">Selecciona el tipo de usuario que deseas registrar</h3>
+                    <h2 class="section-subheading text-muted">Selecciona el tipo de usuario que deseas registrar</h2>
+                    <br/>
                 </div>
                 <div class="row text-center">
                     <div class="col-md-4">
@@ -67,7 +67,7 @@ session_start();
                         </span>
                         <h4 class="my-3">Registrarse como aprendiz</h4>
                         </a>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
+                        <h5 class="form-text" style="color:#ffffff;">Al registrarte como aprendiz podrás buscar tutores en determinadas áreas de conocimiento.</h5>
                         </div>
                     <div class="col-md-4"></div>
                     <div class="col-md-4">
@@ -78,7 +78,7 @@ session_start();
                         </span>
                         <h4 class="my-3">Registrarse como tutor</h4>
                         </a>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
+                        <h5 class="form-text" style="color:#ffffff;">Puedes registrarte como tutor para comenzar a impartir tutorías según tus áreas de conocimiento.</h5>
                         <br><br><br><br><br><br><br><br><br><br><br>
                     </div>
                 </div>

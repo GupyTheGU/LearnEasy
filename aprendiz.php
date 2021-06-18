@@ -8,8 +8,8 @@ if (!isset($_SESSION['Datos'])) {
 }
 
     $listaTutores = Array();
-    include 'conexion.php';
-    include 'tutorClass.php';
+    include 'Clases/BD/conexion.php';
+    include 'Clases/Cuenta/tutorClass.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -41,7 +41,7 @@ if (!isset($_SESSION['Datos'])) {
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav text-uppercase ml-auto">
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizCuenta.php">Visualizar cuenta</a></li>
-                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendiz.php">Buscar tutorías</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizBuscTut.php">Buscar tutorías</a></li>
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="aprendizAgenda.php">Visualizar agenda</a></li>
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="cerrarSesion.php">Cerrar sesión</a></li>
                     </ul>
@@ -51,16 +51,16 @@ if (!isset($_SESSION['Datos'])) {
         <!-- Masthead-->
         <header class="masthead" style="padding-bottom: 0rem">
             <div class="container">
-                <div class="masthead-subheading">¡Bienvenido a LearnEasy!</div>
+                <div class="masthead-subheading">¡Bienvenido a LearnEasy <?php echo $_SESSION['Datos'][0] ?>!</div>
                 <div class="masthead-heading text-uppercase">Nuestro objetivo es apoyarte</div>
-                <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#services">Conocer más</a>
+                <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#comenzar">Por dónde comenzar</a>
             </div>
             <div class="container">
                 <div class="row p-5 ">
                     <div class="col-md-5 offset-md-0">
                         <div class="container-fluid">
                             <form class="d-flex" method="POST" name="searchForm" >
-                            <input name="areaTutor" class="form-control input-lg" type="search" placeholder="¿En que asignatura necesitas ayuda?" aria-label="Search">
+                            <input name="areaTutor" class="form-control input-lg" size="50" type="search" placeholder="¿Qué asignatura deseas buscar?" aria-label="Search"/>
                             <button type="submit" name="btnBuscarTutor" class="btn btn-outline-warning">Buscar</button>
                             </form>
                         </div>
@@ -84,29 +84,40 @@ if (!isset($_SESSION['Datos'])) {
             $aux = "";
             echo "<section class='page-section' id='services'>";
             echo "<div class='container'>";
+            echo "<div class='text-center'>";
+            echo "<h2 class='section-heading text-uppercase'>Resultados para  {$asignatura}</h2>";
+            echo "</div>";
             echo "<div class='row row-cols-1 row-cols-md-3 g-4'>";
             while($Row = $Resultado-> fetch_array()){
                 $maestro = new tutorClass();
-                $maestro->inicializar($Row[0],$Row[1],$Row[2],$Row[3],$Row[4],$Row[5],$Row[6],$Row[7],$Row[8],$Row[9]);
+                $maestro->inicializar($Row[0],$Row[1],$Row[2],$Row[3],$Row[4],$Row[5],$Row[6],$Row[7],$Row[8],$Row[9],$Row[11]);
                 array_push($listaTutores,$maestro);
                 $aux = $Row[11];
+                
                 //echo $Row[0].$Row[1].$Row[2].$Row[3].$Row[4].$Row[5].$Row[6].$Row[7].$Row[8].$Row[9];
                 //echo $maestro->get_nombreCompleto();
             }
             foreach($listaTutores as $key=>$tut){
+                $cortita = '';
                 echo "<div class='col'>";
                 echo    "<div class='card'>";
-                echo        "<img src='...' class='card-img-top' alt='...'>";
+                //echo        "<img src='...' class='card-img-top' alt='...'>";
                 echo        "<div class='card-body'>";
+                
                 echo            "<h5 class='card-title'>".$tut->get_nombreCompleto()."</h5>";
-                echo            "<p class='card-text'>".$tut->descripcion."</p>";
+                if(strlen($tut->descripcion)>250){
+                    $cortita = substr($tut->descripcion,0,240)."...";
+                }else{
+                    $cortita = $tut->descripcion;
+                }
+                echo            "<p class='card-text'>".$cortita."</p>";
                 echo            "<div class='progress'>";
-                echo            "<div class='progress-bar progress-bar-striped bg-warning progress-bar-animated' role='progressbar' style='width: {$tut->get_valoracion()}%' aria-valuenow='{($tut->valoracionT)*20}' aria-valuemin='0' aria-valuemax='100'></div>";
+                echo            "<div class='progress-bar  bg-warning ' role='progressbar' style='width: {$tut->get_valoracion()}%' aria-valuenow='{($tut->valoracionT)*20}' aria-valuemin='0' aria-valuemax='100'></div>";
                 echo            "</div>";
-                echo            "<p class='card-text'>".$tut->valoracionT."</p>";
-                echo            "<form class='d-flex' method='POST' action='verPerfil.php'>";
-                echo            "<input type='submit' class='btn btn-outline-warning bg-dark' value='Ver perfil'/>";
-                echo            "&nbsp;&nbsp;<h8 class='card-text'>{$aux}</h8>";
+                echo            "<p class='card-text'>Valoración: ".$tut->valoracionT."</p>";
+                //echo            "<form class='d-flex' method='POST' action='verPerfil.php'>";
+                echo            "<input type='button' name='btnVerTutor' data-tutor='".$tut->idTutor."' class='btn btn-outline-warning bg-dark' onclick='verTutor(event);' value='Ver perfil'/>";
+                echo            "&nbsp;&nbsp;<h8 class='card-text'>{$tut->singleArea}</h8>";
                 echo        "</div>";
                 echo    "</div>";
                 echo "</div>";
@@ -117,6 +128,52 @@ if (!isset($_SESSION['Datos'])) {
         }
     }
 ?>
+<!-- Services-->
+<section class="page-section" id="comenzar">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading text-uppercase">Opciones disponibles</h2>
+                    <br/>
+                </div>
+                <div class="row text-center">
+                    <div class="col-md-4">
+                    <a href="aprendizCuenta.php">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">Visualizar cuenta</h4>
+                        </a>
+                        <p class="text-muted">Dentro de esta opción podrás realizar las modificaciones que requieras dentro de tu cuenta</p>
+                    </div>
+                    <div class="col-md-4">
+                    <a href="aprendizBuscTut.php">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">Buscar tutorías</h4>
+                        </a>
+                        <p class="text-muted">Aquí podrás realizar la busqueda de las tutorías que necesites</p>
+                    </div>
+                    <div class="col-md-4">
+                    <a href="aprendizAgenda.php">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">Visualizar agenda</h4>
+                        </a>
+                        <p class="text-muted">Dentro de está opción encontrarás todo lo relacionado a las tutorías en las cuales te encuentras registrado</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <!-- form -->
+        <form method="post" action="aprendizBuscTut.php" target='_blank' name="tutorForm" id="tutorForm">
+        <input type="hidden" name="nameTutor" id="nameTutor"/>
+        </form>
         <!-- Footer-->
         <footer class="footer py-4">
             <div class="container">
@@ -135,5 +192,14 @@ if (!isset($_SESSION['Datos'])) {
         <script src="assets/mail/contact_me.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
+        <script>
+        function verTutor(event) {
+            const idTutor = event.target.dataset.tutor;
+            const secreto = document.getElementById("nameTutor");
+            secreto.value = idTutor;
+            console.log(event);
+            document.getElementById('tutorForm').submit();
+        }
+        </script>
     </body>
 </html>

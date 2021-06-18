@@ -1,16 +1,21 @@
 <?php
-
+$Salida = '0';
     session_start();
 
     if (!isset($_SESSION['Datos'])) {
         // No existe la sesión
         header("location:index.php");
+    }else{
+        $idTipo = $_SESSION['Datos'][4];
+        if(strcmp($idTipo,"A")==0){
+            header("location:index.php");
+        }
     }
 
-    include 'conexion.php';
+    include 'Clases/BD/conexion.php';
 
     $idCuenta = $_SESSION['Datos'][5];
-    $Consulta="SELECT * FROM cuenta WHERE idCuenta='$idCuenta'";
+    $Consulta="SELECT * FROM CUENTA WHERE idCuenta='$idCuenta'";
     $Resultado=mysqli_query($Conexion, $Consulta);
     $numFilas = mysqli_num_rows($Resultado);
 
@@ -24,21 +29,44 @@
         $Edad = $Row['edad'];
     }
 
-    if(isset($_POST["btnTutorActualizar"])){
+    if(isset($_POST['tutorCuentaNombre'])){
         $tutorCuentaNombre = $_POST['tutorCuentaNombre'];
         $tutorCuentaPriApe = $_POST['tutorCuentaPriApe'];
         $tutorCuentaSegApe = $_POST['tutorCuentaSegApe'];
         $tutorCuentaEmail = $_POST['tutorCuentaEmail'];
-        $tutorCuentaPass = $_POST['tutorCuentaPass'];
-        $tutorCuentaPassV = $_POST['tutorCuentaPassV'];
+        $tutorCuentaPass = md5($_POST['tutorCuentaPass']);
+        $tutorCuentaPassN = md5($_POST['tutorCuentaPassN']);
+        $tutorCuentaPassNV = md5($_POST['tutorCuentaPassNV']);
         $tutorCuentaCelular = $_POST['tutorCuentaCelular'];
         $tutorCuentaEdad = $_POST['tutorCuentaEdad'];
-        $Consulta="UPDATE cuenta SET nombre='".$tutorCuentaNombre."', pApellido='".$tutorCuentaPriApe."', sApellido='".$tutorCuentaSegApe."', telefono='".$tutorCuentaCelular."', edad='".$tutorCuentaEdad."', correo='".$tutorCuentaEmail."', pass='".$tutorCuentaPass."' WHERE idCuenta = '$idCuenta'";
-        $Ejecutar = mysqli_query($Conexion, $Consulta);
+
+        if($Pass1 != $tutorCuentaPass){
+            $Salida = '0014';
+        }else{
+            if($tutorCuentaPassN != $tutorCuentaPassNV ){
+                $Salida = '0015';
+            }else{
+                if($tutorCuentaPassN != ""){
+                    $tutorCuentaPass = $tutorCuentaPassN;
+                }
+                $Salida = '0005';
+                $Consulta="UPDATE CUENTA SET nombre='".$tutorCuentaNombre."', pApellido='".$tutorCuentaPriApe."', sApellido='".$tutorCuentaSegApe."', telefono='".$tutorCuentaCelular."', edad='".$tutorCuentaEdad."', correo='".$tutorCuentaEmail."', pass='".$tutorCuentaPass."' WHERE idCuenta = '$idCuenta'";
+                $Ejecutar = mysqli_query($Conexion, $Consulta);
+                $Nombre = $tutorCuentaNombre;
+                $PriApe = $tutorCuentaPriApe;
+                $SegApe = $tutorCuentaSegApe;
+                $Correo = $tutorCuentaEmail;
+                $Pass1 = $tutorCuentaPass;
+                $Telefono = $tutorCuentaCelular;
+                $Edad = $tutorCuentaEdad;
+            }
+        }
+        
 
     }
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -58,7 +86,7 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
     </head>
-    <body id="page-top">
+    <body onload='miPost();' id="page-top">
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
             <div class="container">
@@ -82,60 +110,70 @@
             <div class="container">
                 <div class="text-center">
                     <h2 class="section-heading text-uppercase">MI CUENTA</h2>
-                    <h3 class="section-subheading text-muted">A continuación podrás modificar los datos de tu cuenta</h3>
+                    <h2 class="section-subheading text-muted">A continuación podrás modificar los datos de tu cuenta</h2>
+                    <br/>
                 </div>
-                <form id="tutorCuentaForm" method="POST" name="tutorCuentaForm" novalidate="novalidate">
+                <form id="tutorCuentaForm" method="POST" name="tutorCuentaForm">
                     <div class="row align-items-stretch mb-5">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input class="form-control" name="tutorCuentaNombre" type="text" placeholder="Nombre *" value="<?php echo $Nombre;?>" required="required" data-validation-required-message="Por favor ingresa tu nombre" />
-                                <p class="help-block text-danger"></p>
+                        <div class="col-md-7">
+                            <label id="emailHelp" class="form-text" style="color:#fed136;">No dejes en blanco los campos marcados con *.</label>
+                            <br/>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="tutorCuentaNombre" class="text-white">* Nombre</label>
+                                    <input class="form-control" maxlength="30" name="tutorCuentaNombre" id="tutorCuentaNombre" onkeydown="return limiteChars(event,30,'tutorCuentaNombre',2);" type="text" placeholder="Nombre*" value="<?php echo $Nombre;?>" data-validation-required-message="Por favor ingresa tu nombre" required/>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for='tutorCuentaPriApe' class="text-white">* Primer apellido</label>
+                                    <input class="form-control" maxlength="30" name='tutorCuentaPriApe' id='tutorCuentaPriApe' onkeydown="return limiteChars(event,30,'tutorCuentaPriApe',2);" type="text" placeholder="Primer apellido*" value="<?php echo $PriApe;?>" required="required" data-validation-required-message="Por favor ingresa tu primer apellido" required/>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for='tutorCuentaSegApe' class="text-white">Segundo apellido</label>
+                                    <input class="form-control " maxlength="30" name='tutorCuentaSegApe' id='tutorCuentaSegApe' onkeydown="return limiteChars(event,30,'tutorCuentaSegApe',2);" type="text" placeholder="Segundo apellido" value="<?php echo $SegApe;?>" required="required" data-validation-required-message="Por favor ingresa tu segundo apellido" required/>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <input class="form-control" name="tutorCuentaPriApe" type="email" placeholder="Primer apellido *" value="<?php echo $PriApe;?>" required="required" data-validation-required-message="Por favor ingresa tu primer apellido" />
-                                <p class="help-block text-danger"></p>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for='tutorCuentaEmail' class="text-white">* Correo electrónico</label>
+                                    <input class="form-control" maxlength="30" name='tutorCuentaEmail' id='tutorCuentaEmail'  onkeydown="return limiteChars(event,30,'tutorCuentaEmail');" type="email" placeholder="Correo electrónico*" value="<?php echo $Correo;?>" required="required" data-validation-required-message="Por favor ingresa tu correo electrónico"  required/>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <input class="form-control" name="tutorCuentaSegApe" type="text" placeholder="Segundo apellido *" value="<?php echo $SegApe;?>" required="required" data-validation-required-message="Por favor ingresa tu segundo apellido" />
-                                <p class="help-block text-danger"></p>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for='tutorCuentaPass' class="text-white">* Contraseña original</label>
+                                    <label id="emailHelp" class="form-text" style="color:#fed136;" >Ingresa tu contraseña original para poder realizar cambios a tu cuenta</label>
+                                    <input class="form-control" maxlength="30" name='tutorCuentaPass' id='tutorCuentaPass'  onkeydown="return limiteChars(event,30,'tutorCuentaPass',1);" type="password" placeholder="Contraseña*" value="<?php ?>" required="required" data-validation-required-message="Por favor ingresa tu contraseña"  required/>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <input class="form-control" name="tutorCuentaEmail" type="text" placeholder="Correo electrónico *" value="<?php echo $Correo;?>"  required="required" data-validation-required-message="Por favor ingresa tu correo electrónico" />
-                                <p class="help-block text-danger"></p>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for='tutorCuentaPassN' class="text-white">Nueva contraseña</label>
+                                    <label id="emailHelp" class="form-text" style="color:#fed136;">Si estas seguro de cambiar tu contraseña llena los siguientes campos</label>
+                                    <input class="form-control" maxlength="30" name='tutorCuentaPassN' id='tutorCuentaPassN'  onkeydown="return limiteChars(event,30,'tutorCuentaPassN',1);" type="password" placeholder="Ingresa tu nueva contraseña" value="<?php ?>" required="required" data-validation-required-message="Nueva contraseña"  required/>
+                            
+                                    <label id="emailHelp" class="form-text" style="color:#fed136;"> </label>
+                                    <input class="form-control bg-secondary" maxlength="30" name='tutorCuentaPassNV' id='tutorCuentaPassNV' onkeydown="return limiteChars(event,30,'tutorCuentaPassNV',1);" type="password" placeholder="Vuelve a ingresar tu nueva contraseña" value="<?php ?>" required="required" data-validation-required-message="Por favor ingresa tu contraseña nuevamente"  required/>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <input class="form-control" name="tutorCuentaPassA" type="password" placeholder="Contraseña original *" value="<?php echo $Pass1;?>"  required="required" data-validation-required-message="Por favor ingresa tu contraseña" />
-                                <p class="help-block text-danger"></p>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for='tutorCuentaCelular' class="text-white">Teléfono celular</label>
+                                    <input class="form-control" maxlength="10" name='tutorCuentaCelular' id='tutorCuentaCelular' type="number" placeholder="Teléfono celular" value="<?php echo $Telefono;?>" onkeydown="return numeros(event,10,'tutorCuentaCelular');" required/>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <input class="form-control" name="tutorCuentaPass" type="password" placeholder="Nueva contraseña *" value="<?php ?>"  data-validation-required-message="Por favor ingresa tu contraseña" />
-                                <p class="help-block text-danger"></p>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" name="tutorCuentaPassV" type="password" placeholder="Ingresa tu contraseña nuevamente *" value="<?php echo $Pass1;?>"  data-validation-required-message="Por favor ingresa tu contraseña nuevamente" />
-                                <p class="help-block text-danger"></p>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" name="tutorCuentaCelular" type="text" placeholder="Teléfono celular" value="<?php echo $Telefono;?>" />
-                                <p class="help-block text-danger"></p>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" name="tutorCuentaEdad" type="number" placeholder="Edad *" value="<?php echo $Edad;?>" required="required" data-validation-required-message="Por favor ingresa tu edad"/>
-                                <p class="help-block text-danger"></p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group form-group-textarea mb-md-0">
-                                <!-- <button class="btn btn-primary btn-xl text-uppercase" id="sendMessageButton" type="submit">Iniciar sesión</button> -->
-                                <p class="help-block text-danger"></p>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for='tutorCuentaEdad' class="text-white">* Edad</label>
+                                    <input class="form-control" maxlength="3" name='tutorCuentaEdad' id='tutorCuentaEdad'  type="number" placeholder="Edad*" value="<?php echo $Edad;?>"required="required" onkeydown="return numeros(event,3,'tutorCuentaEdad');" data-validation-required-message="Por favor ingresa tu edad" required/>
+                                </div>
                             </div>
                         </div>
                     </div>
+
                     <div>
                         <div id="success"></div>
-                        <button class="btn btn-primary btn-xl text-uppercase" name="btnTutorActualizar" type="submit">Actualizar datos</button>
+                        <input type="button" class="btn btn-primary btn-xl text-uppercase" name="btnTutorActualizar" value="Actualizar datos" onclick="actualizaCuentaTutor();"> 
                     </div>
-                    
                 </form>
             </div>
         </section>
@@ -147,6 +185,126 @@
                 </div>
             </div>
         </footer>
+        <!-- Sweetalert2 https://sweetalert2.github.io/ -->
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <!-- Alerta -->
+        <script>
+            function numeros(e,maximo,_texto) {
+                let keynum;
+                let cadena = document.getElementById(_texto).value.length;
+                if (window.vent)
+                    keynum = e.keyCode;
+                else if (e.which)
+                    keynum = e.which;
+
+                if(cadena < maximo|| keynum == 8||(keynum>36 && keynum <41)){
+                    if ((keynum > 47 && keynum < 58)||(keynum > 95 && keynum < 106)|| keynum == 8||(keynum>36 && keynum <41))
+                        return true;
+                    else
+                        return false;
+                }else
+                    return false;
+            }
+
+            function limiteChars(e,maximo,_texto,white){
+                let keynum;
+                let cadena = document.getElementById(_texto).value.length;
+                if (window.vent)
+                    keynum = e.keyCode;
+                else if (e.which)
+                    keynum = e.which;
+
+                if(cadena < maximo|| keynum == 8||(keynum>36 && keynum <41)){
+                    if(white == 1 && keynum == 32){
+                        return false;
+                    }
+                    return true;
+                }else
+                    return false;
+            }
+            
+            function actualizaCuentaTutor(){
+                let elementos = [];
+                let contador = 0;
+                var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+                elementos.push(document.getElementById("tutorCuentaNombre").value);
+                elementos.push(document.getElementById("tutorCuentaPriApe").value);
+                elementos.push(document.getElementById("tutorCuentaEmail").value);
+                elementos.push(document.getElementById("tutorCuentaPass").value);
+                elementos.push(document.getElementById("tutorCuentaEdad").value);
+
+                let i = 0;
+                for (i = 0; i < elementos.length; i++) {
+                    
+                    if(elementos[i] == '' || elementos[i] == ' ' ){
+                        break;
+                    }
+                }
+                if(i != elementos.length)
+                {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Hay campos obligatorios en blanco, vuelve a revisar los datos',
+                    });
+                    return false;
+                }
+            
+                if(!elementos[2].match(mailformat))
+                {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Ingresa un correo electrónico válido',
+                    });
+                    return false;
+                }
+
+                elementos.push(document.getElementById("tutorCuentaPassN").value);
+                elementos.push(document.getElementById("tutorCuentaPassNV").value);
+                if(elementos[5] != elementos[6]){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Las nuevas contraseñas no coinciden, vuelve a confirmar tu nueva contraseña',
+                    });
+                    return false;
+                }
+
+                document.getElementById("tutorCuentaForm").submit();
+
+            }
+
+            function miPost(){
+                let salida = '<?php echo($Salida); ?>';
+                if(salida == '0014'){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'La contraseña ingresada es incorrecta. Intenta volver a ingresarla',
+                    });
+                    return false;
+                }
+
+                if(salida == '0015'){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Las nuevas contraseñas no coinciden, vuelve a confirmar tu nueva contraseña',
+                    });
+                    return false;
+                }
+
+                if(salida == '0005'){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Actualizado',
+                        text: '¡La información de la cuenta se actualizó correctamente!',
+                    });
+                    return false;
+                }
+            }
+        </script>
         <!-- Bootstrap core JS-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>

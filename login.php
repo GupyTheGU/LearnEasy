@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-
+$numFilas=-1;
     if (isset($_SESSION['Datos'])) {
         // Existe la sesión
         if($_SESSION['Datos'][4] == 'T'){
@@ -12,14 +12,13 @@ session_start();
         }
     }
 
-    include 'conexion.php';
-
-    if(isset($_POST["btnIniciarSesion"]))
+    include 'Clases/BD/conexion.php';
+    if(isset($_POST['loginEmail']))
     {
         $LoginEmail = $_POST['loginEmail'];
-        $LoginPass = $_POST['loginPassword'];
+        $LoginPass = md5($_POST['loginPassword']);
 
-        $Consulta="SELECT * FROM cuenta WHERE correo='$LoginEmail' and pass='$LoginPass'";
+        $Consulta="SELECT * FROM CUENTA WHERE correo='$LoginEmail' and pass='$LoginPass'";
         $Resultado=mysqli_query($Conexion,$Consulta);
         $numFilas = mysqli_num_rows($Resultado);
 
@@ -32,16 +31,15 @@ session_start();
             $idHorario = $Row['idHorario'];
         }
 
-        if($idTipo == 'T'){
-            $Tutor = 1;
-            $Aprendiz = 0;
-        } else if($idTipo == 'A'){
-            $Tutor = 0;
-            $Aprendiz = 1;
-        }
-
         if($numFilas==1)
-        {
+        {   
+            if($idTipo == 'T'){
+                $Tutor = 1;
+                $Aprendiz = 0;
+            } else if($idTipo == 'A'){
+                $Tutor = 0;
+                $Aprendiz = 1;
+            }
             $_SESSION['Datos'] = array();
             array_push($_SESSION['Datos'], $Nombre, $PriApe, $SegApe, $LoginEmail, $idTipo, $idCuenta, $idHorario);
             if($Tutor == 1){
@@ -52,7 +50,7 @@ session_start();
         } 
         else 
         {
-            header("Refresh: 0; URL=login.php");
+            //header("Refresh: 0; URL=login.php");
         }
     }
 
@@ -76,7 +74,7 @@ session_start();
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
     </head>
-    <body id="page-top">
+    <body onload="miPost();" id="page-top">
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
             <div class="container">
@@ -97,31 +95,24 @@ session_start();
             <div class="container">
                 <div class="text-center">
                     <h2 class="section-heading text-uppercase">Iniciar sesión</h2>
-                    <h3 class="section-subheading text-muted">Ingresa los datos solicitados</h3>
+                    <h2 class="section-subheading text-muted">Ingresa los datos solicitados</h2>
+                    <br/>
                 </div>
-                <form id="loginForm" method="POST" name="loginForm" novalidate="novalidate" >
+                <form id="loginForm" method="POST" name="loginForm">
                     <div class="row align-items-stretch mb-5">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <input class="form-control" name="loginEmail" type="email" placeholder="Correo electrónico *" required="required" data-validation-required-message="Por favor ingresa tu correo electrónico" />
+                                <input class="form-control" name="loginEmail" id="loginEmail"  type="email" placeholder="Correo electrónico*" data-validation-required-message="Por favor ingresa tu correo electrónico" requiered/>
                                 <p class="help-block text-danger"></p>
                             </div>
                             <div class="form-group">
-                                <input class="form-control" name="loginPassword" type="password" placeholder="Contraseña *" required="required" data-validation-required-message="Por favor ingresa tu contraseña" />
-                                <p class="help-block text-danger"></p>
-                            </div>
-                            
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group form-group-textarea mb-md-0">
-                                <!-- <button class="btn btn-primary btn-xl text-uppercase" id="sendMessageButton" type="submit">Iniciar sesión</button> -->
+                                <input class="form-control" name="loginPassword" id="loginPass" type="password" placeholder="Contraseña*" data-validation-required-message="Por favor ingresa tu contraseña" required/>
                                 <p class="help-block text-danger"></p>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <div id="success"></div>
-                        <button class="btn btn-primary btn-xl text-uppercase" name="btnIniciarSesion" id="sendMessageButton" type="submit">Iniciar sesión</button>
+                        <input type="button" class="btn btn-primary btn-xl text-uppercase" value="Iniciar Sesión" onclick="inicioSesion();"> 
                     </div>
                 </form>
             </div>
@@ -130,33 +121,29 @@ session_start();
         <section class="page-section" id="services">
             <div class="container">
                 <div class="text-center">
-                    <h2 class="section-heading text-uppercase">Servicios</h2>
-                    <h3 class="section-subheading text-muted">Estos son algunos de los servicios que ofrecemos</h3>
+                    <h2 class="section-heading text-uppercase">Acerca de LearnEasy</h2>
+                    <h3 class="section-subheading text-muted"></h3>
                 </div>
                 <div class="row text-center">
                     <div class="col-md-4">
                         <span class="fa-stack fa-4x">
                             <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-shopping-cart fa-stack-1x fa-inverse"></i>
+                            <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
                         </span>
-                        <h4 class="my-3">E-Commerce</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
+                        <h4 class="my-3">Objetivo</h4>
+                        <p class="text-muted">Nuestro objetivo es apoyar a los estudiantes de diferentes niveles académicos en su formación escolar, ofreciendo una amplia variedad de categorías en las cuales los estudiantes pueden solicitar apoyo a un tutor.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="fa-stack fa-4x">
+                        </span>
                     </div>
                     <div class="col-md-4">
                         <span class="fa-stack fa-4x">
                             <i class="fas fa-circle fa-stack-2x text-primary"></i>
                             <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
                         </span>
-                        <h4 class="my-3">Responsive Design</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="fa-stack fa-4x">
-                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                            <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
-                        </span>
-                        <h4 class="my-3">Web Security</h4>
-                        <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.</p>
+                        <h4 class="my-3">¿Qué buscamos?</h4>
+                        <p class="text-muted">Buscamos incentivar a las personas a prestar sus conocimientos a los estudiantes que lo necesiten, ofreciendo la posibilidad de que cualquier persona que lo desee, pueda registrarse en la plataforma.</p>
                     </div>
                 </div>
             </div>
@@ -169,6 +156,56 @@ session_start();
                 </div>
             </div>
         </footer>
+        <!-- Sweetalert2 https://sweetalert2.github.io/ -->
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <!-- Alerta -->
+        <script>
+            function inicioSesion(){
+                const usuario = document.getElementById("loginEmail").value;
+                const secreto = document.getElementById("loginPass").value;
+                const loginForm = document.getElementById("loginForm");
+                let contador = 0;
+                var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+                if(usuario.match(mailformat))
+                {
+                    contador ++;
+                }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Ingresa un correo electrónico válido',
+                    });
+                return false;
+                }
+                if(secreto != ""){
+                    contador ++;
+                }
+
+                if(contador >1){
+                    loginForm.submit();
+                }
+                else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Los datos que ingresaste son incorrectos, verifica la información e intentalo nuevamente',
+                    });
+                return false;
+                }
+            }
+
+            function miPost(){
+                let salida = <?php echo($numFilas); ?>;
+                if(salida == 0){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Credenciales incorrectas, revisa tus datos e intentalo nuevamente',
+                    });
+                    return false;
+                }
+            }
+        </script>
         <!-- Bootstrap core JS-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -181,4 +218,3 @@ session_start();
         <script src="js/scripts.js"></script>
     </body>
 </html>
-
